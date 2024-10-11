@@ -1,52 +1,49 @@
-package br.calebe.ticketmachine.core;
-
-import br.calebe.ticketmachine.exception.PapelMoedaInvalidaException;
-import br.calebe.ticketmachine.exception.SaldoInsuficienteException;
-import java.util.Iterator;
-
-/**
- *
- * @author Calebe de Paula Bianchini
- */
 public class TicketMachine {
+    private int balance;
+    private int total;
+    private int price;
 
-    protected int valor;
-    protected int saldo;
-    protected int[] papelMoeda = {2, 5, 10, 20, 50, 100};
-
-    public TicketMachine(int valor) {
-        this.valor = valor;
-        this.saldo = 0;
+    public TicketMachine(int price) {
+        this.price = price;
+        this.balance = 0;
+        this.total = 0;
     }
 
-    public void inserir(int quantia) throws PapelMoedaInvalidaException {
-        boolean achou = false;
-        for (int i = 0; i < papelMoeda.length && !achou; i++) {
-            if (papelMoeda[1] == quantia) {
-                achou = true;
-            }
+    public int getPrice() {
+        return price;
+    }
+
+    public int getBalance() {
+        return balance;
+    }
+
+    public void insertMoney(int amount) {
+        if (amount > 0) {
+            balance += amount;
+        } else {
+            throw new IllegalArgumentException("Amount must be positive.");
         }
-        if (!achou) {
-            throw new PapelMoedaInvalidaException();
+    }
+
+    public boolean hasSufficientBalance() {
+        return balance >= price;
+    }
+
+    public void printTicket() {
+        if (hasSufficientBalance()) {
+            System.out.println("########## Ticket ##########");
+            System.out.println("Price: " + price + " cents.");
+            System.out.println("############################");
+            balance -= price;
+            total += price;
+        } else {
+            System.out.println("Insufficient balance.");
         }
-        this.saldo += quantia;
     }
 
-    public int getSaldo() {
-        return saldo;
-    }
-
-    public Iterator<Integer> getTroco() {
-        return null;
-    }
-
-    public String imprimir() throws SaldoInsuficienteException {
-        if (saldo < valor) {
-            throw new SaldoInsuficienteException();
-        }
-        String result = "*****************\n";
-        result += "*** R$ " + saldo + ",00 ****\n";
-        result += "*****************\n";
-        return result;
+    public int refundBalance() {
+        int amountToRefund = balance;
+        balance = 0;
+        return amountToRefund;
     }
 }
